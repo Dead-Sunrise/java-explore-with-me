@@ -14,7 +14,7 @@ public class HitMapper {
                 .app(hitDto.getApp())
                 .uri(hitDto.getUri())
                 .ip(hitDto.getIp())
-                .created(hitDto.getCreated())
+                .timestamp(hitDto.getTimestamp())
                 .build();
     }
 
@@ -24,7 +24,7 @@ public class HitMapper {
                 .app(hit.getApp())
                 .uri(hit.getUri())
                 .ip(hit.getIp())
-                .created(hit.getCreated())
+                .timestamp(hit.getTimestamp())
                 .build();
     }
 }

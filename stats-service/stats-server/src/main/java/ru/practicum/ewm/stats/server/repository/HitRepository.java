@@ -13,7 +13,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     @Query("""
             SELECT new ru.practicum.ewm.dto.StatsDto(h.app, h.uri, COUNT(DISTINCT h.ip))
             FROM Hit h
-            WHERE h.created BETWEEN :start AND :end
+            WHERE h.timestamp BETWEEN :start AND :end
             GROUP BY h.app, h.uri
             ORDER BY COUNT(DISTINCT h.ip) DESC
             """)
@@ -23,7 +23,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     @Query("""
             SELECT new ru.practicum.ewm.dto.StatsDto(h.app, h.uri, COUNT(h))
             FROM Hit h
-            WHERE h.created BETWEEN :start AND :end
+            WHERE h.timestamp BETWEEN :start AND :end
             GROUP BY h.app, h.uri
             ORDER BY COUNT(h) DESC
             """)
@@ -33,7 +33,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     @Query("""
             SELECT new ru.practicum.ewm.dto.StatsDto(h.app, h.uri, COUNT(DISTINCT h.ip))
             FROM Hit h
-            WHERE h.created BETWEEN :start AND :end
+            WHERE h.timestamp BETWEEN :start AND :end
                 AND h.uri IN :uris
             GROUP BY h.app, h.uri
             ORDER BY COUNT(DISTINCT h.ip) DESC
@@ -45,7 +45,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     @Query("""
             SELECT new ru.practicum.ewm.dto.StatsDto(h.app, h.uri, COUNT(h))
             FROM Hit h
-            WHERE h.created BETWEEN :start AND :end
+            WHERE h.timestamp BETWEEN :start AND :end
                 AND h.uri IN :uris
             GROUP BY h.app, h.uri
             ORDER BY COUNT(h) DESC
