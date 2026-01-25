@@ -47,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.categoryToCategoryDto(categoryRepository.save(category));
     }
 
+    @Transactional
     @Override
     public void adminDeleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)

@@ -245,7 +245,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<EventFullDto> adminSearchEvents(String ip, List<Long> users, List<EventState> states, List<Long> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         if (from == null) {
@@ -276,7 +276,6 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .map(eventMapper::eventToEventFullDto)
                 .toList();
-        sendViews(events, ip);
         return addViewsAndRequestsInFullDto(events);
     }
 
