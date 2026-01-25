@@ -53,4 +53,14 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     List<StatsDto> getStatsWithUris(@Param("start") LocalDateTime start,
                                     @Param("end") LocalDateTime end,
                                     @Param("uris") List<String> uris);
+
+    @Query("""
+            SELECT new ru.practicum.ewm.dto.StatsDto(hit.app, hit.uri,
+            COUNT(DISTINCT hit.ip))
+            FROM Hit hit
+            WHERE hit.uri IN :uris
+            GROUP BY hit.app, hit.uri
+            ORDER BY COUNT(DISTINCT hit.ip) DESC
+            """)
+    List<StatsDto> getUniqueStatsByUris(@Param("uris") List<String> uris);
 }

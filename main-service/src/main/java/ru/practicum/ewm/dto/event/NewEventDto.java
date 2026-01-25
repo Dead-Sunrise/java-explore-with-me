@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +20,14 @@ import java.time.LocalDateTime;
 public class NewEventDto {
 
     @NotBlank
+    @Size(min = 20, max = 2048)
     private String annotation;
 
     @NotNull
     private Long category;
 
+    @NotBlank
+    @Size(min = 20, max = 4096)
     private String description;
 
     @NotNull
