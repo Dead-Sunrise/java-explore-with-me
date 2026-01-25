@@ -56,7 +56,6 @@ public class EventServiceImpl implements EventService {
         event.setCategory(category);
         event.setInitiator(initiator);
         event.setCreatedOn(LocalDateTime.now());
-        event.setConfirmedRequests(0);
         event.setState(EventState.PENDING);
         return eventMapper.eventToEventFullDto(eventRepository.save(event));
     }
@@ -155,6 +154,15 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> publicSearchEvents(String ip, String text, List<Long> categories, Boolean paid,
                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                   Boolean onlyAvailable, String sort, Integer from, Integer size) {
+        if (from == null) {
+            from = 0;
+        }
+        if (size == null) {
+            size = 10;
+        }
+        if (size <= 0) {
+            throw new BadRequestException("Параметр size должен быть положительным числом.");
+        }
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Дата начала события должна быть раньше даты окончания.");
         }
@@ -240,6 +248,15 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public List<EventFullDto> adminSearchEvents(String ip, List<Long> users, List<EventState> states, List<Long> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+        if (from == null) {
+            from = 0;
+        }
+        if (size == null) {
+            size = 10;
+        }
+        if (size <= 0) {
+            throw new BadRequestException("Параметр size должен быть положительным числом.");
+        }
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException("Дата начала события должна быть раньше даты окончания.");
         }
@@ -269,16 +286,11 @@ public class EventServiceImpl implements EventService {
                 .map(EventShortDto::getId)
                 .collect(Collectors.toList());
         HashMap<Long, Long> idAndViews = statsClient.getStatsById(ids, "/events/").getIdAndViews();
-        dtoList = dtoList
-                .stream()
-                .peek(dto -> dto.setViews(idAndViews.get(dto.getId())))
-                .collect(Collectors.toList());
-        dtoList = dtoList
-                .stream()
-                .peek(dto ->
-                        dto.setConfirmedRequests(requestRepository.countByEvent_IdAndStatus(dto.getId(),
-                                RequestStatus.CONFIRMED)))
-                .collect(Collectors.toList());
+        dtoList.forEach(dto -> dto.setViews(idAndViews.getOrDefault(dto.getId(), 0L)));
+        dtoList.forEach(dto -> {
+            Integer count = requestRepository.countByEventIdAndStatus(dto.getId(), RequestStatus.CONFIRMED).intValue();
+            dto.setConfirmedRequests(count != null ? count : 0);
+        });
         return dtoList;
     }
 
@@ -288,16 +300,11 @@ public class EventServiceImpl implements EventService {
                 .map(EventFullDto::getId)
                 .collect(Collectors.toList());
         HashMap<Long, Long> idAndViews = statsClient.getStatsById(ids, "/events/").getIdAndViews();
-        dtoList = dtoList
-                .stream()
-                .peek(dto -> dto.setViews(idAndViews.get(dto.getId())))
-                .collect(Collectors.toList());
-        dtoList = dtoList
-                .stream()
-                .peek(dto ->
-                        dto.setConfirmedRequests(requestRepository.countByEvent_IdAndStatus(dto.getId(),
-                                RequestStatus.CONFIRMED)))
-                .collect(Collectors.toList());
+        dtoList.forEach(dto -> dto.setViews(idAndViews.getOrDefault(dto.getId(), 0L)));
+        dtoList.forEach(dto -> {
+            Integer count = requestRepository.countByEventIdAndStatus(dto.getId(), RequestStatus.CONFIRMED).intValue();
+            dto.setConfirmedRequests(count != null ? count : 0);
+        });
         return dtoList;
     }
 

@@ -27,10 +27,6 @@ public class Event {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "confirmed_requests")
-    @Builder.Default
-    private Integer confirmedRequests = 0;
-
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
 

@@ -35,7 +35,7 @@ public class AdminCompilationController {
     }
 
     @DeleteMapping("/{compilationId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long compilationId) {
         log.info("DELETE запрос на удаление запроса по id.");
         compilationService.adminDeleteCompilation(compilationId);

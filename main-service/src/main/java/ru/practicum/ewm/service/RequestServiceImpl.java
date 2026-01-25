@@ -57,11 +57,9 @@ public class RequestServiceImpl implements RequestService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("Невозможно создать запрос, событие ещё не опубликовано");
         }
-        if (event.getParticipantLimit() > 0) {
-            Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-            if (confirmedRequests >= event.getParticipantLimit()) {
-                throw new ConflictException("В событии достигнут лимит участников.");
-            }
+        Long confirmedRequestsCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+        if (event.getParticipantLimit() > 0 && confirmedRequestsCount >= event.getParticipantLimit()) {
+            throw new ConflictException("В событии достигнут лимит участников.");
         }
         Request request = Request.builder()
                 .requester(user)
@@ -70,8 +68,6 @@ public class RequestServiceImpl implements RequestService {
                 .build();
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             request.setStatus(RequestStatus.CONFIRMED);
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            eventRepository.save(event);
         } else {
             request.setStatus(RequestStatus.PENDING);
         }
@@ -91,15 +87,7 @@ public class RequestServiceImpl implements RequestService {
         if (request.getStatus() == RequestStatus.CANCELED) {
             return RequestMapper.requestToRequestDto(request);
         }
-        boolean confirmed = request.getStatus() == RequestStatus.CONFIRMED;
         request.setStatus(RequestStatus.CANCELED);
-        if (confirmed) {
-            Event event = request.getEvent();
-            if (event.getConfirmedRequests() > 0) {
-                event.setConfirmedRequests(event.getConfirmedRequests() - 1);
-                eventRepository.save(event);
-            }
-        }
         return RequestMapper.requestToRequestDto(requestRepository.save(request));
     }
 
@@ -143,7 +131,7 @@ public class RequestServiceImpl implements RequestService {
         }
         List<Request> confirmed = new ArrayList<>();
         List<Request> rejected = new ArrayList<>();
-        int freePlaces = event.getParticipantLimit() - event.getConfirmedRequests();
+        int freePlaces = event.getParticipantLimit() - requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED).intValue();
         if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
             if (freePlaces <= 0) {
                 throw new ConflictException("Достигнут лимит участников события.");
@@ -157,10 +145,6 @@ public class RequestServiceImpl implements RequestService {
                     request.setStatus(RequestStatus.REJECTED);
                     rejected.add(request);
                 }
-            }
-            if (!confirmed.isEmpty()) {
-                event.setConfirmedRequests(event.getConfirmedRequests() + confirmed.size());
-                eventRepository.save(event);
             }
         } else {
             for (Request request : requests) {
