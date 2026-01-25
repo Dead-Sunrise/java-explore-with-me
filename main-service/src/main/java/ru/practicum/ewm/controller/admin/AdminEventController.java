@@ -15,6 +15,7 @@ import ru.practicum.ewm.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class AdminEventController {
     @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> searchEvents(
             @RequestParam(required = false) List<Long> users,
-            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<String> states,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
@@ -37,7 +38,14 @@ public class AdminEventController {
             HttpServletRequest request) {
         log.info("GET запрос на поиск события администратором по параметрам.");
         statsClient.createHit(request, "main-service");
-        return eventService.adminSearchEvents(request.getRemoteAddr(), users, states, categories, rangeStart, rangeEnd, from, size);
+        List<EventState> eventStates = null;
+        if (states != null && !states.isEmpty()) {
+            eventStates = states.stream()
+                    .map(String::toUpperCase)
+                    .map(EventState::valueOf)
+                    .collect(Collectors.toList());
+        }
+        return eventService.adminSearchEvents(request.getRemoteAddr(), users, eventStates, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
