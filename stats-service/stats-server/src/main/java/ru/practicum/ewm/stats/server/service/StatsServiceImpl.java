@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.HitDto;
 import ru.practicum.ewm.dto.StatsDto;
 import ru.practicum.ewm.dto.StatsDtoById;
-import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.stats.server.mapper.HitMapper;
 import ru.practicum.ewm.stats.server.model.Hit;
 import ru.practicum.ewm.stats.server.repository.HitRepository;
