@@ -276,7 +276,8 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .map(eventMapper::eventToEventFullDto)
                 .toList();
-        return addViewsAndRequestsInFullDto(events);
+        events = addViewsAndRequestsInFullDto(events);
+        return events;
     }
 
     private List<EventShortDto> addViewsAndRequestsInShortsDto(List<EventShortDto> dtoList) {

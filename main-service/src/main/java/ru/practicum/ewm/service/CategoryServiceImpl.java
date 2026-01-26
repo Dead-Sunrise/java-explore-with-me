@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.category.NewCategoryDto;
 import ru.practicum.ewm.exception.ConflictException;
@@ -19,13 +18,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
 
     @Override
-    @Transactional
     public CategoryDto adminCreateCategory(NewCategoryDto newCategoryDto) {
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
             throw new ValidationException("Категория с названием " + newCategoryDto.getName() + " уже существует.");
@@ -34,7 +31,6 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.categoryToCategoryDto(categoryRepository.save(category));
     }
 
-    @Transactional
     @Override
     public CategoryDto adminUpdateCategory(Long categoryId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryId)
@@ -47,7 +43,6 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.categoryToCategoryDto(categoryRepository.save(category));
     }
 
-    @Transactional
     @Override
     public void adminDeleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
