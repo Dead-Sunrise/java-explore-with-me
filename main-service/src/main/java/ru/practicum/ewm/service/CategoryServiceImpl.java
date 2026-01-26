@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.category.NewCategoryDto;
 import ru.practicum.ewm.exception.ConflictException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
@@ -34,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto adminUpdateCategory(Long categoryId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ConflictException("Категория с id: " + categoryDto + " не существует."));
+                .orElseThrow(() -> new NotFoundException("Категория с id: " + categoryDto + " не существует."));
         if (categoryRepository.existsByName(categoryDto.getName()) &&
                 !category.getName().equals(categoryDto.getName())) {
             throw new ConflictException("Категория с таким именем уже существует.");
@@ -46,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void adminDeleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ConflictException("Категория с id: " + categoryId + " не существует."));
+                .orElseThrow(() -> new NotFoundException("Категория с id: " + categoryId + " не существует."));
         if (eventRepository.existsByCategoryId(categoryId)) {
             throw new ConflictException("Удаление невозможно, существуют события с данной категорией.");
         }
@@ -56,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto publicGetCategoryById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ConflictException("Категория с id: " + categoryId + " не существует."));
+                .orElseThrow(() -> new NotFoundException("Категория с id: " + categoryId + " не существует."));
         return CategoryMapper.categoryToCategoryDto(category);
     }
 
