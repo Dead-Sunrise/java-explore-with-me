@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.HitDto;
 import ru.practicum.ewm.dto.StatsDto;
 import ru.practicum.ewm.dto.StatsDtoById;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.stats.server.service.StatsService;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class StatsController {
             @RequestParam(required = false) List<String> uris,
             @RequestParam(required = false, defaultValue = "false") boolean unique
     ) {
+        if (start.isAfter(end)) {
+            throw new ValidationException("Дата окончания в диапазоне не должна быть раньше начала.");
+        }
         return statsService.getStats(start, end, uris, unique);
     }
 

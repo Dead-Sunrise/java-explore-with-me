@@ -29,9 +29,6 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        if (start.isAfter(end)) {
-            throw new ValidationException("Дата окончания в диапазоне не должна быть раньше начала");
-        }
         if (uris == null || uris.isEmpty()) {
             if (unique) {
                 return hitRepository.getUniqueStats(start, end);

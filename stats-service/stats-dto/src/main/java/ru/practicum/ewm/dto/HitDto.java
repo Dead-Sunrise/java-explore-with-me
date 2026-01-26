@@ -23,6 +23,6 @@ public class HitDto {
     @NotBlank
     private String ip;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime timestamp;
 }
