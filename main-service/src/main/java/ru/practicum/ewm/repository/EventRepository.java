@@ -31,7 +31,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND e.eventDate BETWEEN :start AND :end " +
             "AND (:onlyAvailable = false OR e.participantLimit = 0 " +
             "OR e.participantLimit > (SELECT COUNT(r) FROM Request r " +
-            "WHERE r.event = e AND r.status = 'CONFIRMED'))")
+            "WHERE r.event.id = e.id AND r.status = 'CONFIRMED'))")
     List<Event> publicSearchEvents(@Param("state") EventState state,
                                    @Param("text") String text,
                                    @Param("categories") List<Long> categories,

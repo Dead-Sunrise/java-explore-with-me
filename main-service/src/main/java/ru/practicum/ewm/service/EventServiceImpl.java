@@ -12,9 +12,9 @@ import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.enums.RequestStatus;
 import ru.practicum.ewm.enums.StateAction;
-import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.LocationMapper;
 import ru.practicum.ewm.model.Category;
@@ -46,7 +46,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto privateCreateEvent(Long userId, NewEventDto newEventDto) {
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new BadRequestException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
+            throw new ValidationException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
         }
         User initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь по id: " + userId + " не существует."));
@@ -78,7 +78,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventUserRequest.getEventDate() != null
                 && updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new BadRequestException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
+            throw new ValidationException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
         }
         if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
@@ -161,10 +161,10 @@ public class EventServiceImpl implements EventService {
             size = 10;
         }
         if (size <= 0) {
-            throw new BadRequestException("Параметр size должен быть положительным числом.");
+            throw new ValidationException("Параметр size должен быть положительным числом.");
         }
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new BadRequestException("Дата начала события должна быть раньше даты окончания.");
+            throw new ValidationException("Дата начала события должна быть раньше даты окончания.");
         }
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
         LocalDateTime end = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(100);
@@ -213,7 +213,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventAdminRequest.getEventDate() != null
                 && updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new BadRequestException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
+            throw new ValidationException("Дата начала события должна быть не ранее чем через 2 часа от текущего времени.");
         }
         if (updateEventAdminRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
@@ -255,10 +255,10 @@ public class EventServiceImpl implements EventService {
             size = 10;
         }
         if (size <= 0) {
-            throw new BadRequestException("Параметр size должен быть положительным числом.");
+            throw new ValidationException("Параметр size должен быть положительным числом.");
         }
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new BadRequestException("Дата начала события должна быть раньше даты окончания.");
+            throw new ValidationException("Дата начала события должна быть раньше даты окончания.");
         }
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
         LocalDateTime end = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(100);
