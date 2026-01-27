@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.user.NewUserRequest;
 import ru.practicum.ewm.dto.user.UserDto;
+import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.UserMapper;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(NewUserRequest newUserRequest) {
         if (userRepository.existsByEmail(newUserRequest.getEmail())) {
-            throw new ValidationException("Пользователь с таким email уже существует.");
+            throw new ConflictException("Пользователь с таким email уже существует.");
         }
         User user = userMapper.newUserRequestToUser(newUserRequest);
         return userMapper.userToUserDto(userRepository.save(user));

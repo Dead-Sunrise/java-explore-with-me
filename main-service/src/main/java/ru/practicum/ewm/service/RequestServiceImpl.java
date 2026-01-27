@@ -126,7 +126,7 @@ public class RequestServiceImpl implements RequestService {
                 throw new NotFoundException("Событие с id: " + eventId + " не относится к запросу c id: " + request.getId());
             }
             if (request.getStatus() != RequestStatus.PENDING) {
-                throw new ValidationException("Запрос с id: " + request.getId() + " должно иметь статус PENDING.");
+                throw new ConflictException("Запрос с id: " + request.getId() + " должно иметь статус PENDING.");
             }
         }
         List<Request> confirmed = new ArrayList<>();

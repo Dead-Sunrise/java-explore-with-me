@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto adminCreateCategory(NewCategoryDto newCategoryDto) {
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
-            throw new ValidationException("Категория с названием " + newCategoryDto.getName() + " уже существует.");
+            throw new ConflictException("Категория с названием " + newCategoryDto.getName() + " уже существует.");
         }
         Category category = CategoryMapper.newCategoryDtoToCategory(newCategoryDto);
         return CategoryMapper.categoryToCategoryDto(categoryRepository.save(category));
